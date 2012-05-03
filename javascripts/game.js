@@ -373,11 +373,11 @@ function chooseBestMove(gameBoard,depth,turn){
 }
 
 
-
+//withcomputer
 var target=new EventTarget();
 var game={
     gameBoard:new Array("E","E","E","E","E","E","E","E","E"),
-    gameTurn:"player",
+    gameTurn:"playerone",
     gameState:function(){
         var result;
         var WIN_STATUS=new Array(
@@ -403,7 +403,7 @@ var game={
             var secondChess=this.gameBoard[WIN_STATUS[pos][1]];
             var thirdChess=this.gameBoard[WIN_STATUS[pos][2]];
             if(firstChess==secondChess&&firstChess==thirdChess&&firstChess!='E'){
-                result= (firstChess==this.player.sign ? WIN : LOSE);
+                result= (firstChess==this.playerone.sign ? WIN : LOSE);
                 return result;
             }
         }
@@ -414,18 +414,19 @@ var game={
         return GOON;
 
     },
-    player:{
+    playerone:{
         sign:"X"
 
     },
-    computer:{
+    playertwo:{
         sign:"O"
     }
 };
 
-
 var withComputerButton=document.getElementById("withComputer");
 var playNow=function(){
+    var player=game.playertwo;
+    var computer=game.playerone;
 
     var gameControlBoard=document.getElementById("gameControlBoard");
     var playButton=document.createElement("button");
@@ -441,37 +442,37 @@ var playNow=function(){
 
     var gameControl=function(){
         var playerHandler=function(event){
-            if(game.gameTurn=="player"){
             var canvas=document.getElementById("myCanvas");
             canvas.removeEventListener("click",playerHandler,false);
 
-               var pos=getElementRelPos(canvas,event);
-               var row=0;
-               var column=0;
+            var pos=getElementRelPos(canvas,event);
+            var row=0;
+            var column=0;
 
-               if(pos.x<canvas.width/3){
-                   column=0;
-               }
-               else if(pos.x>canvas.width/3&&pos.x<2*canvas.width/3){
-                   column=1;
-               }
-               else if(pos.x>2*canvas.width/3){
-                   column=2;
-               }
-               if(pos.y<canvas.height/3){
-                   row=0;
-               }
-               else if(pos.y>canvas.height/3&&pos.y<2*canvas.height/3){
-                  row=1;
-               }
-               else if(pos.y>2*canvas.height/3){
-                 row=2;
-               }
+            if(pos.x<canvas.width/3){
+                column=0;
+            }
+            else if(pos.x>canvas.width/3&&pos.x<2*canvas.width/3){
+                column=1;
+            }
+            else if(pos.x>2*canvas.width/3){
+                column=2;
+            }
+            if(pos.y<canvas.height/3){
+                row=0;
+            }
+            else if(pos.y>canvas.height/3&&pos.y<2*canvas.height/3){
+                row=1;
+            }
+            else if(pos.y>2*canvas.height/3){
+                row=2;
+            }
 
 
-               var ctx=canvas.getContext("2d");
-               ctx.strokeStyle="red";
-               if(game.player.sign=="X"){
+            var ctx=canvas.getContext("2d");
+            ctx.strokeStyle="red";
+
+            if(game.gameTurn=="playerone"){
                   var padding=15;
                   var size=60;
                   var x0,y0,x1,y1,x2,y2,x3,y3,x4,y4;
@@ -485,10 +486,10 @@ var playNow=function(){
                   y3=y1+size;
                   x4=x1+size;
                   y4=y1+size;
-                drawX(ctx,x1,y1,x2,y2,x3,y3,x4,y4,function(){
-                    game.gameBoard[row*3+column]=game.player.sign;
+                  drawX(ctx,x1,y1,x2,y2,x3,y3,x4,y4,function(){
+                    game.gameBoard[row*3+column]=game.playerone.sign;
                     if(game.gameState()==GOON){
-                        game.gameTurn="computer";
+                        game.gameTurn="playertwo";
                         target.addListener("computer",computerHandler);
                         target.fire("computer");
                     }
@@ -501,15 +502,18 @@ var playNow=function(){
                     else{
                         alert("Tie!")
                     }
-                });
-              }
-              else{
-                var centery=canvas.height/6+canvas.height/3*row;
+                  });
+
+
+            }
+            else{
                 var centerx=canvas.width/6+canvas.width/3*column;
+                var centery=canvas.height/6+canvas.height/3*row;
+
                 drawO(ctx,centerx,centery,function(){
-                    game.gameBoard[row*3+column]=game.player.sign;
+                    game.gameBoard[row*3+column]=game.playertwo.sign;
                     if(game.gameState()==GOON){
-                        game.gameTurn="computer";
+                        game.gameTurn="playerone";
                         target.addListener("computer",computerHandler);
                         target.fire("computer");
                     }
@@ -525,55 +529,87 @@ var playNow=function(){
 
 
                 });
-
-              }
             }
         };
 
 
         var computerHandler=function(){
-            if(game.gameTurn=="computer"){
+            target.removeListener("computer",computerHandler);
 
-              target.removeListener("computer",computerHandler);
+            var canvas=document.getElementById("myCanvas");
+            var ctx=canvas.getContext("2d");
+            ctx.strokeStyle="blue";
+            var bestMove=chooseBestMove(game.gameBoard,3,computer.sign);
 
-              var canvas=document.getElementById("myCanvas");
-              var ctx=canvas.getContext("2d");
-              var bestMove=chooseBestMove(game.gameBoard,3,"O");
+            var row,column;
+            var centerx,centery;
+            column=bestMove%3;
+            row=(bestMove-column)/3;
 
-              var row,column;
-              var centerx,centery;
-              column=bestMove%3;
-              row=(bestMove-column)/3;
+            if(game.gameTurn=="playerone"){
+                var padding=15;
+                var size=60;
+                var x0,y0,x1,y1,x2,y2,x3,y3,x4,y4;
+                x0=canvas.width/3*column;
+                y0=canvas.height/3*row;
+                x1=x0+padding;
+                y1=y0+padding;
+                x2=x1+size;
+                y2=y1;
+                x3=x1;
+                y3=y1+size;
+                x4=x1+size;
+                y4=y1+size;
+                drawX(ctx,x1,y1,x2,y2,x3,y3,x4,y4,function(){
+                    game.gameBoard[row*3+column]=game.playerone.sign;
+                    if(game.gameState()==GOON){
+                        game.gameTurn="playertwo";
+                        var canvas=document.getElementById("myCanvas");
+                        canvas.addEventListener("click",playerHandler,false);
+                    }
+                    else if(game.gameState()==WIN){
+                        alert("Player wins the game!")
+                    }
+                    else if(game.gameState()==LOSE){
+                        alert("Player loses the game!")
+                    }
+                    else{
+                        alert("Tie!")
+                    }
+                });
 
-              centerx=canvas.width/6+column*canvas.width/3;
-              centery=canvas.height/6+row*canvas.height/3;
+            }
+            else{
+                centerx=canvas.width/6+column*canvas.width/3;
+                centery=canvas.height/6+row*canvas.height/3;
 
 
-              drawO(ctx,centerx,centery,function(){
-                  game.gameTurn="player";
-                  game.gameBoard[bestMove]=game.computer.sign;
-                  if(game.gameState()==GOON){
-                      var canvas=document.getElementById("myCanvas");
-                      canvas.addEventListener("click",playerHandler,false);
-                  }
-                  else if(game.gameState()==WIN){
-                      alert("Player wins the game!")
-                  }
-                  else if(game.gameState()==LOSE){
-                      alert("Player loses the game!")
-                  }
-                  else{
-                      alert("Tie!")
-                  }
+                drawO(ctx,centerx,centery,function(){
+                    game.gameBoard[bestMove]=game.playertwo.sign;
+                    game.gameTurn="playerone";
+                    if(game.gameState()==GOON){
+                        var canvas=document.getElementById("myCanvas");
+                        canvas.addEventListener("click",playerHandler,false);
+                    }
+                    else if(game.gameState()==WIN){
+                        alert("Player wins the game!")
+                    }
+                    else if(game.gameState()==LOSE){
+                        alert("Player loses the game!")
+                    }
+                    else{
+                        alert("Tie!")
+                    }
 
-              });
+                });
+
             }
         };
 
 
 
         if(game.gameState()==GOON){
-            if(game.gameTurn=="player"){
+            if(player.sign==game.playerone){
                 canvas.addEventListener("click",playerHandler,false);
             }
             else{
@@ -596,6 +632,117 @@ var playNow=function(){
     playButton.addEventListener("click",gameControl,false);
 };
 withComputerButton.addEventListener("click",playNow,false);
+
+//withplayer
+var rowHandler=function(event){
+    var username=event.target.innerHTML;
+    var xhr=new XMLHttpRequest();
+    xhr.onreadystatechange=function(){
+        if(xhr.readyState==4){
+            if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
+                if(xhr.responseText=="1"){
+                    var canvas=document.getElementById("myCanvas");
+                    drawGameBoard(canvas);
+                }
+                else{
+                    alert("request failed");
+                }
+
+            }
+            else{
+                alert("request failed");
+            }
+        }
+    };
+    xhr.open("post","../pages/request.php",true);
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    var poststr="playertwo="+event.target.innerHTML;
+    xhr.send(poststr);
+
+};
+var tb=document.getElementById('onlineuser');
+var row;
+for(row=1;row<tb.rows.length;row++){
+
+    tb.rows[row].cells[0].addEventListener("dblclick",rowHandler,false);
+}
+
+
+var onlineuserListener=function(){
+    var xhr=new XMLHttpRequest();
+    xhr.onreadystatechange=function(){
+        if(xhr.readyState==4){
+            if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
+                setTimeout(onlineuserListener,5000);
+                document.getElementById("player").innerHTML=xhr.responseText;
+                tb=document.getElementById('onlineuser');
+                for(row=1;row<tb.rows.length;row++){
+                    tb.rows[row].cells[0].addEventListener("dblclick",rowHandler,false);
+                }
+
+            }
+            else{
+
+            }
+        }
+    };
+    xhr.open("post","../pages/userList.php",true);
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xhr.send(null);
+};
+setTimeout(onlineuserListener,5000);
+
+var requestListener=function(){
+    var xhr=new XMLHttpRequest();
+    xhr.onreadystatechange=function(){
+        if(xhr.readyState==4){
+            if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
+
+                var result=xhr.responseText.split(",");
+                if(result[0]=="1"){
+                    if(confirm("Do you accept Player:"+result[1]+" request ?")){
+                        var xhr1=new XMLHttpRequest();
+                        xhr1.onreadystatechange=function(){
+                            if(xhr1.readyState==4){
+                                if((xhr1.status>=200&&xhr1.status<300)||xhr1.status==304){
+                                    if(xhr1.responseText="1"){
+
+                                    }
+
+                                }
+                                else{
+
+                                }
+                            }
+                        };
+                        xhr1.open("post","../pages/accept.php",true);
+                        xhr1.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                        var poststr="playerone="+result[1];
+                        xhr1.send(poststr);
+                        var canvas=document.getElementById("myCanvas");
+                        drawGameBoard(canvas);
+                    }
+                    else{
+                        setTimeout(requestListener,1000);
+                    }
+                }
+                else{
+                    setTimeout(requestListener,1000);
+                }
+            }
+            else{
+
+            }
+        }
+    };
+    xhr.open("post","../pages/requestListener.php",true);
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xhr.send(null);
+
+};
+
+setTimeout(requestListener,1000);
+
 
 
 

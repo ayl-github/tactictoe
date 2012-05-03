@@ -46,12 +46,12 @@
                 echo "0";
             }
             else{
-                $prequery="update online set status=1 where username=?";
+                $prequery="update online set status='1' where username=?";
                 $stmt=$mysqli->prepare($prequery);
                 $stmt->bind_param("s",$playertwo);
                 $stmt->execute();
 
-                $prequery="update online set status=1 where username=?";
+                $prequery="update online set status='1' where username=?";
                 $stmt=$mysqli->prepare($prequery);
                 $stmt->bind_param("s",$playerone);
                 $stmt->execute();
@@ -72,12 +72,12 @@
                     echo "1";
                 }
                 else{
-                    $prequery="update online set status=0 where username=?";
+                    $prequery="update online set status='0' where username=?";
                     $stmt=$mysqli->prepare($prequery);
                     $stmt->bind_param("s",$playertwo);
                     $stmt->execute();
 
-                    $prequery="update online set status=0 where username=?";
+                    $prequery="update online set status='0' where username=?";
                     $stmt=$mysqli->prepare($prequery);
                     $stmt->bind_param("s",$playerone);
                     $stmt->execute();

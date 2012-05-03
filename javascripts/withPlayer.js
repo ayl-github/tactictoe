@@ -13,7 +13,9 @@
             if(xhr.readyState==4){
                 if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
                     if(xhr.responseText=="1"){
-                        alert("request succeeded!");
+                        //alert("request succeeded!");
+                        var canvas=document.getElementById("myCanvas");
+                        drawGameBoard(canvas);
                     }
                     else{
                         alert("request failed");
@@ -50,6 +52,7 @@
                     for(row=1;row<tb.rows.length;row++){
                         tb.rows[row].cells[0].addEventListener("dblclick",rowHandler,false);
                     }
+                    setTimeout(onlineuserListener,5000);
                 }
                 else{
 
@@ -57,10 +60,10 @@
             }
         };
         xhr.open("post","../pages/userList.php",true);
-        //xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
         xhr.send(null);
     };
-    setInterval(onlineuserListener,5000);
+    setTimeout(onlineuserListener,5000);
 
     var requestListener=function(){
         var xhr=new XMLHttpRequest();
@@ -71,8 +74,31 @@
                     var result=xhr.responseText.split(",");
                     if(result[0]=="1"){
                         if(confirm("Do you accept Player:"+result[1]+" request ?")){
+                            var xhr1=new XMLHttpRequest();
+                            xhr1.onreadystatechange=function(){
+                                if(xhr1.readyState==4){
+                                    if((xhr1.status>=200&&xhr1.status<300)||xhr1.status==304){
+                                        if(xhr1.responseText="1"){
 
+                                        }
+
+                                    }
+                                    else{
+
+                                    }
+                                }
+                            };
+                            xhr1.open("post","../pages/accept.php",true);
+                            xhr1.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                            var poststr="playerone="+result[1];
+                            xhr1.send(poststr);
                         }
+                        else{
+                            setTimeout(requestListener,1000);
+                        }
+                    }
+                    else{
+                        setTimeout(requestListener,1000);
                     }
                 }
                 else{
@@ -83,9 +109,10 @@
         xhr.open("post","../pages/requestListener.php",true);
         xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
         xhr.send(null);
+
     };
 
-    setInterval(requestListener,1000);
+  setTimeout(requestListener,1000);
 
 
 

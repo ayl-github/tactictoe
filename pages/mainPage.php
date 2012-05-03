@@ -73,7 +73,7 @@
   
 </section>
 
-<script src="../javascripts/withComputer.js" type="text/javascript"></script>
-<script src="../javascripts/withPlayer.js" type="text/javascript"></script>
+<script src="../javascripts/game.js" type="text/javascript"></script>
+
 </body>
 </html>
