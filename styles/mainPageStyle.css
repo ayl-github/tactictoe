@@ -1,0 +1,82 @@
+@charset "utf-8";
+/* CSS Document */
+
+body{
+    height:100%;
+    background-color:#330033;
+}
+#page {
+    max-width:50em;
+    height:40em;
+    margin:0 auto;
+    background-color:#330066;
+}
+
+#left {
+    float:left;
+    width: 70%;
+    height:100%;
+    background-color:#330077;
+}
+
+#room{
+    height:65%;
+    margin:10px;
+    background-color:#330022;
+
+}
+
+#gameTitle{
+    color:#00FF00;
+    text-align:center;
+    background-color: #33CC00;
+    height:10%;
+
+
+}
+
+#gameBoard{
+    margin:5px auto 0;
+    background-color:#000033;
+    width:400px;
+    height: 310px;
+
+}
+
+#gameControlBoard{
+    background-color:#990033;
+    height:20px;
+}
+
+
+#information{
+    height:30%;
+    margin:10px;
+    background-color:#330044;
+}
+
+
+#right {
+    float:right;
+    width:30%;
+    height:100%;
+    background-color:#330088;
+}
+
+#close{
+    height:10%;
+    background-color:#CCFF00;
+}
+#computer{
+    height:10%;
+    background-color:#99CC33;
+}
+#player{
+    height:60%;
+    background-color:#6600CC;
+}
+
+table,td{
+    border: 1px solid black;
+}
+
