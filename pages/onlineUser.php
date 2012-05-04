@@ -19,7 +19,7 @@
     $username=$_SESSION["username"];
 
     $query="select * from online  ";
-    echo "<table id='onlineuser'> <tr><th>online user</th></tr>";
+    echo "<table id='onlineUser'> <tr><th>online user</th></tr>";
     if( $result=$mysqli->query($query)){
         while($row=$result->fetch_assoc()){
             if($row["username"]!=$username){

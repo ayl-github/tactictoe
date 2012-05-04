@@ -123,11 +123,11 @@ function drawCircleByFrame(myCircle){
 
 function drawX(ctx,x1,y1,x2,y2,x3,y3,x4,y4,handler){
 
-    drawDynamicLine(ctx,x1,y1,x4,y4,20,drawDynamicLine.bind(ctx,x2,y2,x3,y3,20,handler
+    drawDynamicLine(ctx,x1,y1,x4,y4,5,drawDynamicLine.bind(ctx,x2,y2,x3,y3,5,handler
     ));
 }
 function drawO(ctx,centerx,centery,handler){
-    drawDynamicCircle(ctx,centerx,centery,30,40,handler);
+    drawDynamicCircle(ctx,centerx,centery,30,30,handler);
 
 }
 function drawGameBoard(canvas){
@@ -139,10 +139,10 @@ function drawGameBoard(canvas){
     var ctx=canvas.getContext('2d');
     ctx.strokeStyle="orange";
 
-    drawDynamicLine(ctx,0,canvas.height/3,canvas.width,canvas.height/3,3,function(){});
-    drawDynamicLine(ctx,0,2*canvas.height/3,canvas.width,2*canvas.height/3,3,function(){});
-    drawDynamicLine(ctx,canvas.width/3,0,canvas.width/3,canvas.height,3,function(){});
-    drawDynamicLine(ctx,2*canvas.width/3,0,2*canvas.width/3,canvas.height,3,function(){
+    drawDynamicLine(ctx,0,canvas.height/3,canvas.width,canvas.height/3,2,function(){});
+    drawDynamicLine(ctx,0,2*canvas.height/3,canvas.width,2*canvas.height/3,2,function(){});
+    drawDynamicLine(ctx,canvas.width/3,0,canvas.width/3,canvas.height,2,function(){});
+    drawDynamicLine(ctx,2*canvas.width/3,0,2*canvas.width/3,canvas.height,2,function(){
          document.getElementById("playButton").style.display="";
     });
 
@@ -206,10 +206,10 @@ Function.prototype.bind= function()
 
 
 
-var INFINITY=80;
+var INFINITY=100;
 var WIN=+INFINITY;
 var LOSE=-INFINITY;
-var GAMEPOINT=INFINITY/4;
+var GAMEPOINT=INFINITY/2;
 var GOON=1;
 var DRAW=0;
 function stateEvaluate(gameBoard){
@@ -415,18 +415,21 @@ var game={
 
     },
     playerone:{
-        sign:"X"
+        sign:"X",
+        role:""
 
     },
     playertwo:{
-        sign:"O"
+        sign:"O",
+        role:""
     }
 };
 
+//play with computer
 var withComputerButton=document.getElementById("withComputer");
-var playNow=function(){
-    var player=game.playertwo;
-    var computer=game.playerone;
+var withComputer=function(){
+    game.playerone.role="computer" ;
+    game.playertwo.role="player";
 
     var gameControlBoard=document.getElementById("gameControlBoard");
     var playButton=document.createElement("button");
@@ -494,10 +497,10 @@ var playNow=function(){
                         target.fire("computer");
                     }
                     else if(game.gameState()==WIN){
-                        alert("Player wins the game!")
+                        alert(game.playerone.role+" wins the game!")
                     }
                     else if(game.gameState()==LOSE){
-                        alert("Player loses the game!")
+                        alert(game.playerone.role+" loses the game!")
                     }
                     else{
                         alert("Tie!")
@@ -518,10 +521,10 @@ var playNow=function(){
                         target.fire("computer");
                     }
                     else if(game.gameState()==WIN){
-                        alert("Player wins the game!")
+                        alert(game.playerone.role+" wins the game!")
                     }
                     else if(game.gameState()==LOSE){
-                        alert("Player loses the game!")
+                        alert(game.playerone.role+" loses the game!")
                     }
                     else{
                         alert("Tie!")
@@ -539,7 +542,14 @@ var playNow=function(){
             var canvas=document.getElementById("myCanvas");
             var ctx=canvas.getContext("2d");
             ctx.strokeStyle="blue";
-            var bestMove=chooseBestMove(game.gameBoard,3,computer.sign);
+            var bestMove;
+            if(game.playerone.role=="computer") {
+                bestMove=chooseBestMove(game.gameBoard,2,game.playerone.sign);
+            }
+            else{
+                bestMove=chooseBestMove(game.gameBoard,2,game.playertwo.sign);
+            }
+
 
             var row,column;
             var centerx,centery;
@@ -568,10 +578,10 @@ var playNow=function(){
                         canvas.addEventListener("click",playerHandler,false);
                     }
                     else if(game.gameState()==WIN){
-                        alert("Player wins the game!")
+                        alert(game.playerone.role+" wins the game!")
                     }
                     else if(game.gameState()==LOSE){
-                        alert("Player loses the game!")
+                        alert(game.playerone.role+" loses the game!")
                     }
                     else{
                         alert("Tie!")
@@ -592,10 +602,10 @@ var playNow=function(){
                         canvas.addEventListener("click",playerHandler,false);
                     }
                     else if(game.gameState()==WIN){
-                        alert("Player wins the game!")
+                        alert(game.playerone.role+" wins the game!")
                     }
                     else if(game.gameState()==LOSE){
-                        alert("Player loses the game!")
+                        alert(game.playerone.role+" loses the game!")
                     }
                     else{
                         alert("Tie!")
@@ -609,7 +619,7 @@ var playNow=function(){
 
 
         if(game.gameState()==GOON){
-            if(player.sign==game.playerone){
+            if(game.playerone.role=="player"){
                 canvas.addEventListener("click",playerHandler,false);
             }
             else{
@@ -618,10 +628,10 @@ var playNow=function(){
             }
         }
         else if(game.gameState()==WIN){
-            alert("Player wins the game!")
+            alert(game.playerone.role+" wins the game!")
         }
         else if(game.gameState()==LOSE){
-            alert("Player loses the game!")
+            alert(game.playerone.role+" loses the game!")
         }
         else{
             alert("Tie!")
@@ -631,117 +641,157 @@ var playNow=function(){
 
     playButton.addEventListener("click",gameControl,false);
 };
-withComputerButton.addEventListener("click",playNow,false);
+withComputerButton.addEventListener("click",withComputer,false);
 
-//withplayer
-var rowHandler=function(event){
-    var username=event.target.innerHTML;
-    var xhr=new XMLHttpRequest();
-    xhr.onreadystatechange=function(){
-        if(xhr.readyState==4){
-            if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
-                if(xhr.responseText=="1"){
-                    var canvas=document.getElementById("myCanvas");
-                    drawGameBoard(canvas);
+
+//play with player
+var withPlayerButton=document.getElementById("withPlayer");
+var withPlayer=function(){
+    var rowHandler=function(event){
+        var username=event.target.innerHTML;
+        var xhr=new XMLHttpRequest();
+        xhr.onreadystatechange=function(){
+            if(xhr.readyState==4){
+                if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
+                    if(xhr.responseText=="1"){
+                        var canvas=document.getElementById("myCanvas");
+                        drawGameBoard(canvas);
+                    }
+                    else{
+                        alert("request failed");
+                    }
+
                 }
                 else{
                     alert("request failed");
                 }
+            }
+        };
+        xhr.open("post","../pages/request.php",true);
+        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        var poststr="playertwo="+event.target.innerHTML;
+        xhr.send(poststr);
 
-            }
-            else{
-                alert("request failed");
-            }
-        }
     };
-    xhr.open("post","../pages/request.php",true);
-    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    var poststr="playertwo="+event.target.innerHTML;
-    xhr.send(poststr);
 
-};
-var tb=document.getElementById('onlineuser');
-var row;
-for(row=1;row<tb.rows.length;row++){
+    var onlineuserListener=function(){
+        var xhr=new XMLHttpRequest();
+        xhr.onreadystatechange=function(){
+            if(xhr.readyState==4){
+                if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
+                    setTimeout(onlineuserListener,5000);
 
-    tb.rows[row].cells[0].addEventListener("dblclick",rowHandler,false);
-}
+                    document.getElementById("userList").innerHTML=xhr.responseText;
+                    var tb=document.getElementById('onlineUser');
+                    for(var row=1;row<tb.rows.length;row++){
+                        tb.rows[row].cells[0].addEventListener("dblclick",rowHandler,false);
+                    }
 
-
-var onlineuserListener=function(){
-    var xhr=new XMLHttpRequest();
-    xhr.onreadystatechange=function(){
-        if(xhr.readyState==4){
-            if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
-                setTimeout(onlineuserListener,5000);
-                document.getElementById("player").innerHTML=xhr.responseText;
-                tb=document.getElementById('onlineuser');
-                for(row=1;row<tb.rows.length;row++){
-                    tb.rows[row].cells[0].addEventListener("dblclick",rowHandler,false);
                 }
+                else{
 
+                }
             }
-            else{
-
-            }
-        }
+        };
+        xhr.open("post","../pages/onlineUser.php",true);
+        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xhr.send(null);
     };
-    xhr.open("post","../pages/userList.php",true);
-    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xhr.send(null);
-};
-setTimeout(onlineuserListener,5000);
+    onlineuserListener();
 
-var requestListener=function(){
-    var xhr=new XMLHttpRequest();
-    xhr.onreadystatechange=function(){
-        if(xhr.readyState==4){
-            if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
 
-                var result=xhr.responseText.split(",");
-                if(result[0]=="1"){
-                    if(confirm("Do you accept Player:"+result[1]+" request ?")){
-                        var xhr1=new XMLHttpRequest();
-                        xhr1.onreadystatechange=function(){
-                            if(xhr1.readyState==4){
-                                if((xhr1.status>=200&&xhr1.status<300)||xhr1.status==304){
-                                    if(xhr1.responseText="1"){
+
+    var plyerControl=function(){
+        var canvas=document.getElementById("myCanvas");
+        drawGameBoard(canvas);
+
+        var xhr=new XMLHttpRequest();
+        xhr.onreadystatechange=function(){
+            if(xhr.readyState==4){
+                if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
+                   var newgameborad=xhr.responseText.split(',');
+                   var num=-1;
+                   for(var i=0;i<game.gameBoard.length;i++){
+                      if(newgameborad[i]!=game.gameBoard[i]){
+                         num=i;
+                         break;
+                      }
+                   }
+                   if(num!=-1){
+
+                   }
+                   else{
+
+                   }
+
+                }
+                else{
+
+                }
+            }
+        };
+        xhr.open("post","../pages/gameMessage.php",true);
+        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xhr.send(null);
+    };
+
+
+
+    var requestListener=function(){
+        var xhr=new XMLHttpRequest();
+        xhr.onreadystatechange=function(){
+            if(xhr.readyState==4){
+                if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
+
+                    var result=xhr.responseText.split(",");
+                    if(result[0]=="1"){
+                        if(confirm("Do you accept Player:"+result[1]+" request ?")){
+                            var xhr1=new XMLHttpRequest();
+                            xhr1.onreadystatechange=function(){
+                                if(xhr1.readyState==4){
+                                    if((xhr1.status>=200&&xhr1.status<300)||xhr1.status==304){
+                                        if(xhr1.responseText="1"){
+
+
+                                        }
 
                                     }
+                                    else{
 
+                                    }
                                 }
-                                else{
+                            };
+                            xhr1.open("post","../pages/accept.php",true);
+                            xhr1.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                            var poststr="playerone="+result[1];
+                            xhr1.send(poststr);
 
-                                }
-                            }
-                        };
-                        xhr1.open("post","../pages/accept.php",true);
-                        xhr1.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-                        var poststr="playerone="+result[1];
-                        xhr1.send(poststr);
-                        var canvas=document.getElementById("myCanvas");
-                        drawGameBoard(canvas);
+                        }
+                        else{
+                            setTimeout(requestListener,1000);
+                        }
                     }
                     else{
                         setTimeout(requestListener,1000);
                     }
                 }
                 else{
-                    setTimeout(requestListener,1000);
+
                 }
             }
-            else{
+        };
+        xhr.open("post","../pages/requestListener.php",true);
+        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xhr.send(null);
 
-            }
-        }
     };
-    xhr.open("post","../pages/requestListener.php",true);
-    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xhr.send(null);
 
+    setTimeout(requestListener,1000);
 };
+withPlayerButton.addEventListener("click",withPlayer,false);
 
-setTimeout(requestListener,1000);
+
+
 
 
 

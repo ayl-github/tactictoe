@@ -49,24 +49,13 @@
     <section id="close">
     </section>
     <section id="computer">
-     <button id="withComputer">PlayWithPC</button>
+     <button id="withComputer">withComputer</button>
     </section>
     <section id="player">
-       <?php
+        <button id="withPlayer">withPlayer</button>
+    </section>
+    <section id="userList">
 
-        $query="select * from online  ";
-        echo "<table id='onlineuser'> <tr><th>online user</th></tr>";
-        if( $result=$mysqli->query($query)){
-            while($row=$result->fetch_assoc()){
-                if($row["username"]!=$username){
-                    echo"<tr><td>".$row["username"]."</td></tr>";
-                }
-            }
-        }
-        echo "</table>" ;
-        $mysqli->close();
-        //echo "<script>alert('php');</script>";
-        ?>
     </section>
   </section>
   

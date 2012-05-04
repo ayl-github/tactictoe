@@ -19,7 +19,7 @@
     $playerone=$_SESSION['username'];
     $playertwo=$_POST['playertwo'];
     $isready='0';
-    $gameboard='EEEEEEEEE';
+    $gameboard='E,E,E,E,E,E,E,E,E';
 
 
     $query="select status from online where username='".$playerone."'";
@@ -63,7 +63,7 @@
                 $stmt->bind_param("ssss",$playerone,$playertwo,$isready,$gameboard);
                 $stmt->execute();
 
-                sleep(5);
+                sleep(3);
 
                 $query="select isready from game where playerone='".$playerone."'and playertwo='".$playertwo."'";
                 $result=$mysqli->query($query);
