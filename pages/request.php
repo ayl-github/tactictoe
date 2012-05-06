@@ -7,10 +7,10 @@
  * To change this template use File | Settings | File Templates.
  */
     $dbusername="ayl";
-    $password="tttAYL";
+    $dbpassword="tttAYL";
     $hostname="localhost";
     $database="tactictoe";
-    $mysqli=new mysqli($hostname,$dbusername,$password,$database);
+    $mysqli=new mysqli($hostname,$dbusername,$dbpassword,$database);
     if(mysqli_connect_errno()){
         echo "Connect failed!";
         exit();
@@ -63,7 +63,7 @@
                 $stmt->bind_param("ssss",$playerone,$playertwo,$isready,$gameboard);
                 $stmt->execute();
 
-                sleep(3);
+                sleep(2);
 
                 $query="select isready from game where playerone='".$playerone."'and playertwo='".$playertwo."'";
                 $result=$mysqli->query($query);

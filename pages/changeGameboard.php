@@ -3,7 +3,7 @@
  * Created by JetBrains PhpStorm.
  * User: Administrator
  * Date: 12-5-4
- * Time: 上午11:46
+ * Time: 下午8:19
  * To change this template use File | Settings | File Templates.
  */
 $dbusername="ayl";
@@ -18,9 +18,13 @@ if(mysqli_connect_errno()){
 session_start();
 $username=$_SESSION['username'];
 
-$query="select gameboard from game where playerone='".$username."' or playertwo='".$username."'";
-if($result=$mysqli->query($query)){
-    $gameboard=$result->fetch_assoc();
-    echo $gameboard['gameboard'];
+$gameBoard=$_POST['gameBoard'];
+$query="update game set gameBoard='".$gameBoard."' where playerone='".$username."'"."or playertwo='".$username."'";
+$result=$mysqli->query($query);
+if($result){
+    echo "1";
+}
+else{
+    echo "0";
 }
 ?>

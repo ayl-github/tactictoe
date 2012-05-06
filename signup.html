@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+<meta charset="utf-8">
+<title>Sign Up</title>
+<link rel="stylesheet" href="styles/signupStyle.css" type="text/css" />
+ </head>
+
+<body>
+<div id="carbonForm">
+	<h1>Sign up</h1>
+
+    <form action="submit.php" method="post" id="signupForm">
+
+    <div class="fieldContainer">
+
+        <div class="formRow">
+            <div class="label">
+                <label for="name">Name:</label>
+            </div>
+            
+            <div class="field">
+                <input type="text" name="name" id="name"  autofocus required placeholder="Your Usernamne Here" />
+            </div>
+        </div>
+        <!--End Username-->
+        
+        <div class="formRow">
+            <div class="label">
+                <label for="email">Email:</label>
+            </div>
+            
+            <div class="field">
+                <input type="email" name="email" id="email" required placeholder="Your E-mail Here "/>
+            </div>
+        </div>
+        <div class="formRow">
+            <div class="label">
+                <label for="email-confirm">Confirm E-mail:</label>
+            </div>
+            
+            <div class="field">
+                <input type="email" name="email-confirm" id="email-confirm" required placeholder="Confirm Your E-mail Address"/>
+            </div>
+        </div>
+        <!--End e-mail-->
+        
+        <div class="formRow">
+            <div class="label">
+                <label for="password">Password:</label>
+            </div>
+            
+            <div class="field">
+                <input type="password" name="password" id="password" required placeholder="Your Password Here" />
+            </div>
+        </div>
+        <div class="formRow">
+            <div class="label">
+                <label for="password-confirm">Confirm Password:</label>
+            </div>
+            
+            <div class="field">
+                <input type="password" name="password-confirm" id="password-confirm"  required placeholder="Confirm Your Password"/>
+            </div>
+        </div>
+       <!-- End password-->
+    </div> <!-- Closing fieldContainer -->
+    
+    <div class="signupButton">
+        <input type="submit" name="submit" id="submit" value="Signup" />
+    </div>
+    
+  </form>
+ <!-- End Form-->
+        
+</div>
+</body>
+</html>

@@ -1,4 +1,3 @@
-
 function getElementPos(element){
     var actualLeft = element.offsetLeft;
     var actualTop = element.offsetTop;
@@ -139,13 +138,26 @@ function drawGameBoard(canvas){
     var ctx=canvas.getContext('2d');
     ctx.strokeStyle="orange";
 
-    drawDynamicLine(ctx,0,canvas.height/3,canvas.width,canvas.height/3,2,function(){});
-    drawDynamicLine(ctx,0,2*canvas.height/3,canvas.width,2*canvas.height/3,2,function(){});
-    drawDynamicLine(ctx,canvas.width/3,0,canvas.width/3,canvas.height,2,function(){});
-    drawDynamicLine(ctx,2*canvas.width/3,0,2*canvas.width/3,canvas.height,2,function(){
-         document.getElementById("playButton").style.display="";
+    drawDynamicLine(ctx,0,canvas.height/3,canvas.width,canvas.height/3,1,function(){});
+    drawDynamicLine(ctx,0,2*canvas.height/3,canvas.width,2*canvas.height/3,1,function(){});
+    drawDynamicLine(ctx,canvas.width/3,0,canvas.width/3,canvas.height,1,function(){});
+    drawDynamicLine(ctx,2*canvas.width/3,0,2*canvas.width/3,canvas.height,1,function(){
+       displayGameControlBoard();
     });
 
+}
+function drawGameControlBoard(){
+    var gameControlBoard=document.getElementById("gameControlBoard");
+    var playButton=document.createElement("button");
+    playButton.setAttribute("id","playButton");
+    var playButtonText=document.createTextNode(" Play ");
+    playButton.appendChild(playButtonText);
+    gameControlBoard.appendChild(playButton);
+    playButton.style.display="none";
+
+}
+function displayGameControlBoard(){
+    document.getElementById("playButton").style.display="";
 }
 
 function EventTarget(){
@@ -203,8 +215,6 @@ Function.prototype.bind= function()
         __method.apply(window,   arg);
     }
 }
-
-
 
 var INFINITY=100;
 var WIN=+INFINITY;
@@ -272,7 +282,6 @@ function stateEvaluate(gameBoard){
     }
     return result;
 }
-
 function  max(gameBoard,depth,alpha,beta){
     var evaluatedValue=stateEvaluate(gameBoard);
     var isGameOver=(evaluatedValue==WIN||evaluatedValue ==LOSE||evaluatedValue==DRAW);
@@ -290,7 +299,6 @@ function  max(gameBoard,depth,alpha,beta){
     }
     return bestValue;
 }
-
 function  min(gameBoard,depth,alpha,beta){
     var evaluatedValue=stateEvaluate(gameBoard);
     var isGameOver=(evaluatedValue==WIN||evaluatedValue ==LOSE||evaluatedValue==DRAW);
@@ -308,12 +316,10 @@ function  min(gameBoard,depth,alpha,beta){
     }
     return bestValue;
 }
-
 function randomSelect(lowerValue,upperValue){
     var choices=upperValue-lowerValue+1;
     return Math.floor(Math.random()*choices+lowerValue);
 }
-
 function chooseBestMove(gameBoard,depth,turn){
     var bestMoves=new Array(9);
     var index=0;
@@ -372,8 +378,6 @@ function chooseBestMove(gameBoard,depth,turn){
 
 }
 
-
-//withcomputer
 var target=new EventTarget();
 var game={
     gameBoard:new Array("E","E","E","E","E","E","E","E","E"),
@@ -422,231 +426,624 @@ var game={
     playertwo:{
         sign:"O",
         role:""
-    }
+    } ,
+    lastWinner:""
 };
 
 //play with computer
+function computerControl(){
+    var canvas=document.getElementById("myCanvas");
+    var playerHandler=function(event){
+        var canvas=document.getElementById("myCanvas");
+        canvas.removeEventListener("click",playerHandler,false);
+
+        var pos=getElementRelPos(canvas,event);
+        var row=0;
+        var column=0;
+
+        if(pos.x<canvas.width/3){
+            column=0;
+        }
+        else if(pos.x>canvas.width/3&&pos.x<2*canvas.width/3){
+            column=1;
+        }
+        else if(pos.x>2*canvas.width/3){
+            column=2;
+        }
+        if(pos.y<canvas.height/3){
+            row=0;
+        }
+        else if(pos.y>canvas.height/3&&pos.y<2*canvas.height/3){
+            row=1;
+        }
+        else if(pos.y>2*canvas.height/3){
+            row=2;
+        }
+
+
+        var ctx=canvas.getContext("2d");
+        ctx.strokeStyle="red";
+
+        if(game.gameTurn=="playerone"){
+            var padding=15;
+            var size=60;
+            var x0,y0,x1,y1,x2,y2,x3,y3,x4,y4;
+            x0=canvas.width/3*column;
+            y0=canvas.height/3*row;
+            x1=x0+padding;
+            y1=y0+padding;
+            x2=x1+size;
+            y2=y1;
+            x3=x1;
+            y3=y1+size;
+            x4=x1+size;
+            y4=y1+size;
+            drawX(ctx,x1,y1,x2,y2,x3,y3,x4,y4,function(){
+                game.gameBoard[row*3+column]=game.playerone.sign;
+                if(game.gameState()==GOON){
+                    game.gameTurn="playertwo";
+                    target.addListener("computer",computerHandler);
+                    target.fire("computer");
+                }
+                else if(game.gameState()==WIN){
+                    alert(game.playerone.role+" wins the game!")
+                }
+                else if(game.gameState()==LOSE){
+                    alert(game.playerone.role+" loses the game!")
+                }
+                else{
+                    alert("Tie!")
+                }
+            });
+
+
+        }
+        else{
+            var centerx=canvas.width/6+canvas.width/3*column;
+            var centery=canvas.height/6+canvas.height/3*row;
+
+            drawO(ctx,centerx,centery,function(){
+                game.gameBoard[row*3+column]=game.playertwo.sign;
+                if(game.gameState()==GOON){
+                    game.gameTurn="playerone";
+                    target.addListener("computer",computerHandler);
+                    target.fire("computer");
+                }
+                else if(game.gameState()==WIN){
+                    alert(game.playerone.role+" wins the game!")
+                }
+                else if(game.gameState()==LOSE){
+                    alert(game.playerone.role+" loses the game!")
+                }
+                else{
+                    alert("Tie!")
+                }
+
+
+            });
+        }
+    };
+
+
+    var computerHandler=function(){
+        target.removeListener("computer",computerHandler);
+
+        var canvas=document.getElementById("myCanvas");
+        var ctx=canvas.getContext("2d");
+        ctx.strokeStyle="blue";
+        var bestMove;
+        if(game.playerone.role=="computer") {
+            bestMove=chooseBestMove(game.gameBoard,2,game.playerone.sign);
+        }
+        else{
+            bestMove=chooseBestMove(game.gameBoard,2,game.playertwo.sign);
+        }
+
+
+        var row=0,column=0;
+        var centerx,centery;
+        column=bestMove%3;
+        row=(bestMove-column)/3;
+
+        if(game.gameTurn=="playerone"){
+            var padding=15;
+            var size=60;
+            var x0,y0,x1,y1,x2,y2,x3,y3,x4,y4;
+            x0=canvas.width/3*column;
+            y0=canvas.height/3*row;
+            x1=x0+padding;
+            y1=y0+padding;
+            x2=x1+size;
+            y2=y1;
+            x3=x1;
+            y3=y1+size;
+            x4=x1+size;
+            y4=y1+size;
+            drawX(ctx,x1,y1,x2,y2,x3,y3,x4,y4,function(){
+                game.gameBoard[row*3+column]=game.playerone.sign;
+                if(game.gameState()==GOON){
+                    game.gameTurn="playertwo";
+                    var canvas=document.getElementById("myCanvas");
+                    canvas.addEventListener("click",playerHandler,false);
+                }
+                else if(game.gameState()==WIN){
+                    alert(game.playerone.role+" wins the game!")
+                }
+                else if(game.gameState()==LOSE){
+                    alert(game.playerone.role+" loses the game!")
+                }
+                else{
+                    alert("Tie!")
+                }
+            });
+
+        }
+        else{
+            centerx=canvas.width/6+column*canvas.width/3;
+            centery=canvas.height/6+row*canvas.height/3;
+
+
+            drawO(ctx,centerx,centery,function(){
+                game.gameBoard[bestMove]=game.playertwo.sign;
+                game.gameTurn="playerone";
+                if(game.gameState()==GOON){
+                    var canvas=document.getElementById("myCanvas");
+                    canvas.addEventListener("click",playerHandler,false);
+                }
+                else if(game.gameState()==WIN){
+                    alert(game.playerone.role+" wins the game!")
+                }
+                else if(game.gameState()==LOSE){
+                    alert(game.playerone.role+" loses the game!")
+                }
+                else{
+                    alert("Tie!")
+                }
+
+            });
+
+        }
+    };
+
+
+
+    if(game.gameState()==GOON){
+        if(game.playerone.role=="player"){
+            canvas.addEventListener("click",playerHandler,false);
+        }
+        else{
+            target.addListener("computer",computerHandler);
+            target.fire("computer");
+        }
+    }
+    else if(game.gameState()==WIN){
+        alert(game.playerone.role+" wins the game!")
+    }
+    else if(game.gameState()==LOSE){
+        alert(game.playerone.role+" loses the game!")
+    }
+    else{
+        alert("Tie!")
+    }
+}
+
 var withComputerButton=document.getElementById("withComputer");
 var withComputer=function(){
     game.playerone.role="computer" ;
     game.playertwo.role="player";
 
-    var gameControlBoard=document.getElementById("gameControlBoard");
-    var playButton=document.createElement("button");
-    playButton.setAttribute("id","playButton");
-    var playButtonText=document.createTextNode(" Play ");
-    playButton.appendChild(playButtonText);
-    gameControlBoard.appendChild(playButton);
-    playButton.style.display="none";
-
+    drawGameControlBoard();
     var canvas=document.getElementById("myCanvas");
     drawGameBoard(canvas);
 
 
-    var gameControl=function(){
-        var playerHandler=function(event){
-            var canvas=document.getElementById("myCanvas");
-            canvas.removeEventListener("click",playerHandler,false);
-
-            var pos=getElementRelPos(canvas,event);
-            var row=0;
-            var column=0;
-
-            if(pos.x<canvas.width/3){
-                column=0;
-            }
-            else if(pos.x>canvas.width/3&&pos.x<2*canvas.width/3){
-                column=1;
-            }
-            else if(pos.x>2*canvas.width/3){
-                column=2;
-            }
-            if(pos.y<canvas.height/3){
-                row=0;
-            }
-            else if(pos.y>canvas.height/3&&pos.y<2*canvas.height/3){
-                row=1;
-            }
-            else if(pos.y>2*canvas.height/3){
-                row=2;
-            }
-
-
-            var ctx=canvas.getContext("2d");
-            ctx.strokeStyle="red";
-
-            if(game.gameTurn=="playerone"){
-                  var padding=15;
-                  var size=60;
-                  var x0,y0,x1,y1,x2,y2,x3,y3,x4,y4;
-                  x0=canvas.width/3*column;
-                  y0=canvas.height/3*row;
-                  x1=x0+padding;
-                  y1=y0+padding;
-                  x2=x1+size;
-                  y2=y1;
-                  x3=x1;
-                  y3=y1+size;
-                  x4=x1+size;
-                  y4=y1+size;
-                  drawX(ctx,x1,y1,x2,y2,x3,y3,x4,y4,function(){
-                    game.gameBoard[row*3+column]=game.playerone.sign;
-                    if(game.gameState()==GOON){
-                        game.gameTurn="playertwo";
-                        target.addListener("computer",computerHandler);
-                        target.fire("computer");
-                    }
-                    else if(game.gameState()==WIN){
-                        alert(game.playerone.role+" wins the game!")
-                    }
-                    else if(game.gameState()==LOSE){
-                        alert(game.playerone.role+" loses the game!")
-                    }
-                    else{
-                        alert("Tie!")
-                    }
-                  });
-
-
-            }
-            else{
-                var centerx=canvas.width/6+canvas.width/3*column;
-                var centery=canvas.height/6+canvas.height/3*row;
-
-                drawO(ctx,centerx,centery,function(){
-                    game.gameBoard[row*3+column]=game.playertwo.sign;
-                    if(game.gameState()==GOON){
-                        game.gameTurn="playerone";
-                        target.addListener("computer",computerHandler);
-                        target.fire("computer");
-                    }
-                    else if(game.gameState()==WIN){
-                        alert(game.playerone.role+" wins the game!")
-                    }
-                    else if(game.gameState()==LOSE){
-                        alert(game.playerone.role+" loses the game!")
-                    }
-                    else{
-                        alert("Tie!")
-                    }
-
-
-                });
-            }
-        };
-
-
-        var computerHandler=function(){
-            target.removeListener("computer",computerHandler);
-
-            var canvas=document.getElementById("myCanvas");
-            var ctx=canvas.getContext("2d");
-            ctx.strokeStyle="blue";
-            var bestMove;
-            if(game.playerone.role=="computer") {
-                bestMove=chooseBestMove(game.gameBoard,2,game.playerone.sign);
-            }
-            else{
-                bestMove=chooseBestMove(game.gameBoard,2,game.playertwo.sign);
-            }
-
-
-            var row,column;
-            var centerx,centery;
-            column=bestMove%3;
-            row=(bestMove-column)/3;
-
-            if(game.gameTurn=="playerone"){
-                var padding=15;
-                var size=60;
-                var x0,y0,x1,y1,x2,y2,x3,y3,x4,y4;
-                x0=canvas.width/3*column;
-                y0=canvas.height/3*row;
-                x1=x0+padding;
-                y1=y0+padding;
-                x2=x1+size;
-                y2=y1;
-                x3=x1;
-                y3=y1+size;
-                x4=x1+size;
-                y4=y1+size;
-                drawX(ctx,x1,y1,x2,y2,x3,y3,x4,y4,function(){
-                    game.gameBoard[row*3+column]=game.playerone.sign;
-                    if(game.gameState()==GOON){
-                        game.gameTurn="playertwo";
-                        var canvas=document.getElementById("myCanvas");
-                        canvas.addEventListener("click",playerHandler,false);
-                    }
-                    else if(game.gameState()==WIN){
-                        alert(game.playerone.role+" wins the game!")
-                    }
-                    else if(game.gameState()==LOSE){
-                        alert(game.playerone.role+" loses the game!")
-                    }
-                    else{
-                        alert("Tie!")
-                    }
-                });
-
-            }
-            else{
-                centerx=canvas.width/6+column*canvas.width/3;
-                centery=canvas.height/6+row*canvas.height/3;
-
-
-                drawO(ctx,centerx,centery,function(){
-                    game.gameBoard[bestMove]=game.playertwo.sign;
-                    game.gameTurn="playerone";
-                    if(game.gameState()==GOON){
-                        var canvas=document.getElementById("myCanvas");
-                        canvas.addEventListener("click",playerHandler,false);
-                    }
-                    else if(game.gameState()==WIN){
-                        alert(game.playerone.role+" wins the game!")
-                    }
-                    else if(game.gameState()==LOSE){
-                        alert(game.playerone.role+" loses the game!")
-                    }
-                    else{
-                        alert("Tie!")
-                    }
-
-                });
-
-            }
-        };
-
-
-
-        if(game.gameState()==GOON){
-            if(game.playerone.role=="player"){
-                canvas.addEventListener("click",playerHandler,false);
-            }
-            else{
-               target.addListener("computer",computerHandler);
-               target.fire("computer");
-            }
-        }
-        else if(game.gameState()==WIN){
-            alert(game.playerone.role+" wins the game!")
-        }
-        else if(game.gameState()==LOSE){
-            alert(game.playerone.role+" loses the game!")
-        }
-        else{
-            alert("Tie!")
-        }
-    };
-
-
-    playButton.addEventListener("click",gameControl,false);
+    var playButton=document.getElementById("playButton");
+    playButton.addEventListener("click",computerControl,false);
 };
 withComputerButton.addEventListener("click",withComputer,false);
 
 
 //play with player
+function changeGameBoard(newGameBoard){
+    var changedPos=-1;
+    for(var i=0;i<game.gameBoard.length;i++){
+        if(game.gameBoard[i]!=newGameBoard[i]){
+            changedPos=i;
+            break;
+        }
+    }
+    return changedPos;
+}
+function inviterControl(){
+    var playButton=document.getElementById("playButton");
+    playButton.removeEventListener('click',inviteeControl,false);
+
+    var secondHandler=function(){
+        var xhr=new XMLHttpRequest();
+        xhr.onreadystatechange=function(){
+            if(xhr.readyState==4){
+                if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
+
+                    var newgameborad=xhr.responseText.split(',');
+
+                    var canvas=document.getElementById("myCanvas");
+                    var ctx=canvas.getContext("2d");
+
+                    var changedPos=changeGameBoard(newgameborad);
+                    if(changedPos!=-1){
+
+                        var row=0;
+                        var column=0;
+                        column=changedPos%3;
+                        row=(changedPos-column)/3;
+
+
+                        var centerx=canvas.width/6+column*canvas.width/3;
+                        var centery=canvas.height/6+row*canvas.height/3;
+
+                        ctx.strokeStyle="blue";
+                        drawO(ctx,centerx,centery,function(){
+
+                            game.gameBoard[row*3+column]=game.playertwo.sign;
+
+                            if(game.gameState()==GOON){
+
+                                var playeroneDraw=function(event){
+                                    var canvas=document.getElementById("myCanvas");
+                                    canvas.removeEventListener("click",playeroneDraw,false);
+
+                                    var pos=getElementRelPos(canvas,event);
+                                    var row=0;
+                                    var column=0;
+
+                                    if(pos.x<canvas.width/3){
+                                        column=0;
+                                    }
+                                    else if(pos.x>canvas.width/3&&pos.x<2*canvas.width/3){
+                                        column=1;
+                                    }
+                                    else if(pos.x>2*canvas.width/3){
+                                        column=2;
+                                    }
+                                    if(pos.y<canvas.height/3){
+                                        row=0;
+                                    }
+                                    else if(pos.y>canvas.height/3&&pos.y<2*canvas.height/3){
+                                        row=1;
+                                    }
+                                    else if(pos.y>2*canvas.height/3){
+                                        row=2;
+                                    }
+
+                                    var padding=15;
+                                    var size=60;
+                                    var x0,y0,x1,y1,x2,y2,x3,y3,x4,y4;
+                                    x0=canvas.width/3*column;
+                                    y0=canvas.height/3*row;
+                                    x1=x0+padding;
+                                    y1=y0+padding;
+                                    x2=x1+size;
+                                    y2=y1;
+                                    x3=x1;
+                                    y3=y1+size;
+                                    x4=x1+size;
+                                    y4=y1+size;
+
+                                    ctx.strokeStyle="red";
+                                    drawX(ctx,x1,y1,x2,y2,x3,y3,x4,y4,function(){
+                                        game.gameBoard[row*3+column]=game.playerone.sign;
+                                        var xhr=new XMLHttpRequest();
+                                        xhr.onreadystatechange=function(){
+                                            if(xhr.readyState==4){
+                                                if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
+                                                    if(xhr.responseText=="1"){
+                                                        if(game.gameState()==GOON){
+                                                            setTimeout(secondHandler,1000);
+                                                        }
+                                                        else if(game.gameState()==WIN){
+                                                            alert(game.playerone.role+" wins the game!")
+                                                        }
+                                                        else if(game.gameState()==LOSE){
+                                                            alert(game.playerone.role+" loses the game!")
+                                                        }
+                                                        else{
+                                                            alert("Tie!")
+                                                        }
+
+                                                    }
+                                                    else{
+                                                        setTimeout(secondHandler,1000);
+                                                    }
+
+                                                }
+                                                else{
+                                                    xhr.open("post","../pages/changeGameBoard.php",true);
+                                                    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                                                    var poststr="gameBoard="+game.gameBoard.toString();
+                                                    xhr.send(poststr);
+                                                }
+                                            }
+                                        };
+                                        xhr.open("post","../pages/changeGameBoard.php",true);
+                                        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                                        var poststr="gameBoard="+game.gameBoard.toString();
+                                        xhr.send(poststr);
+
+
+                                    });
+
+
+
+                                };
+                                canvas.addEventListener('click',playeroneDraw,false)
+
+                            }
+                            else if(game.gameState()==WIN){
+                                alert(game.playerone.role+" wins the game!")
+                            }
+                            else if(game.gameState()==LOSE){
+                                alert(game.playerone.role+" loses the game!")
+                            }
+                            else{
+                                alert("Tie!")
+                            }
+
+
+                        });
+
+
+                    }
+                    else{
+                        setTimeout(secondHandler,1000);
+                    }
+
+                }
+                else{
+                    setTimeout(secondHandler,1000);
+                }
+            }
+        };
+        xhr.open("post","../pages/gameMessage.php",true);
+        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xhr.send(null);
+    };
+
+    var firstHandler=function(event){
+        var canvas=document.getElementById("myCanvas");
+        canvas.removeEventListener("click",firstHandler,false);
+        var ctx=canvas.getContext("2d");
+
+        var pos=getElementRelPos(canvas,event);
+        var row=0;
+        var column=0;
+
+        if(pos.x<canvas.width/3){
+            column=0;
+        }
+        else if(pos.x>canvas.width/3&&pos.x<2*canvas.width/3){
+            column=1;
+        }
+        else if(pos.x>2*canvas.width/3){
+            column=2;
+        }
+        if(pos.y<canvas.height/3){
+            row=0;
+        }
+        else if(pos.y>canvas.height/3&&pos.y<2*canvas.height/3){
+            row=1;
+        }
+        else if(pos.y>2*canvas.height/3){
+            row=2;
+        }
+
+
+        var padding=15;
+        var size=60;
+        var x0,y0,x1,y1,x2,y2,x3,y3,x4,y4;
+        x0=canvas.width/3*column;
+        y0=canvas.height/3*row;
+        x1=x0+padding;
+        y1=y0+padding;
+        x2=x1+size;
+        y2=y1;
+        x3=x1;
+        y3=y1+size;
+        x4=x1+size;
+        y4=y1+size;
+
+        ctx.strokeStyle="red";
+        drawX(ctx,x1,y1,x2,y2,x3,y3,x4,y4,function(){
+
+            game.gameBoard[row*3+column]=game.playerone.sign;
+            var xhr=new XMLHttpRequest();
+            xhr.onreadystatechange=function(){
+                if(xhr.readyState==4){
+                    if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
+                        if(xhr.responseText=="1"){
+                            setTimeout(secondHandler,1000);
+
+                        }
+                        else{
+                            setTimeout(secondHandler,1000);
+                        }
+
+                    }
+                    else{
+                        xhr.open("post","../pages/changeGameBoard.php",true);
+                        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                        var poststr="gameBoard="+game.gameBoard.toString();
+                        xhr.send(poststr);
+                    }
+                }
+            };
+            xhr.open("post","../pages/changeGameBoard.php",true);
+            xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+            var poststr="gameBoard="+game.gameBoard.toString();
+            xhr.send(poststr);
+        });
+
+
+
+
+    };
+    var canvas=document.getElementById("myCanvas");
+
+    canvas.addEventListener('click',firstHandler,false);
+}
+function inviteeControl(){
+
+    var playButton=document.getElementById("playButton");
+    playButton.removeEventListener('click',inviteeControl,false);
+
+    var xhr=new XMLHttpRequest();
+    xhr.onreadystatechange=function(){
+        if(xhr.readyState==4){
+            if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
+                var newgameborad=xhr.responseText.split(',');
+
+
+                var canvas=document.getElementById("myCanvas");
+                var ctx=canvas.getContext("2d");
+
+                var changedPos=changeGameBoard(newgameborad);
+                if(changedPos!=-1){
+                    var row=0;
+                    var column=0;
+                    column=changedPos%3;
+                    row=(changedPos-column)/3;
+
+                    var padding=15;
+                    var size=60;
+                    var x0,y0,x1,y1,x2,y2,x3,y3,x4,y4;
+                    x0=canvas.width/3*column;
+                    y0=canvas.height/3*row;
+                    x1=x0+padding;
+                    y1=y0+padding;
+                    x2=x1+size;
+                    y2=y1;
+                    x3=x1;
+                    y3=y1+size;
+                    x4=x1+size;
+                    y4=y1+size;
+
+                    ctx.strokeStyle="red";
+                    drawX(ctx,x1,y1,x2,y2,x3,y3,x4,y4,function(){
+
+                        game.gameBoard[row*3+column]=game.playerone.sign;
+
+                        if(game.gameState()==GOON){
+                             var playertwoDraw=function(event){
+                                 var canvas=document.getElementById("myCanvas");
+                                 canvas.removeEventListener("click",playertwoDraw,false);
+
+                                 var pos=getElementRelPos(canvas,event);
+                                 var row=0;
+                                 var column=0;
+
+                                 if(pos.x<canvas.width/3){
+                                     column=0;
+                                 }
+                                 else if(pos.x>canvas.width/3&&pos.x<2*canvas.width/3){
+                                     column=1;
+                                 }
+                                 else if(pos.x>2*canvas.width/3){
+                                     column=2;
+                                 }
+                                 if(pos.y<canvas.height/3){
+                                     row=0;
+                                 }
+                                 else if(pos.y>canvas.height/3&&pos.y<2*canvas.height/3){
+                                     row=1;
+                                 }
+                                 else if(pos.y>2*canvas.height/3){
+                                     row=2;
+                                 }
+
+                                 ctx.strokeStyle="blue";
+                                 var centerx=canvas.width/6+column*canvas.width/3;
+                                 var centery=canvas.height/6+row*canvas.height/3;
+
+
+                                 drawO(ctx,centerx,centery,function(){
+
+                                     game.gameBoard[row*3+column]=game.playertwo.sign;
+
+                                     var xhr=new XMLHttpRequest();
+                                     xhr.onreadystatechange=function(){
+                                         if(xhr.readyState==4){
+                                             if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
+                                                 if(xhr.responseText=="1"){
+                                                     if(game.gameState()==GOON){
+                                                         setTimeout(inviteeControl,1000);
+                                                     }
+                                                     else if(game.gameState()==WIN){
+                                                         alert(game.playerone.role+" wins the game!")
+                                                     }
+                                                     else if(game.gameState()==LOSE){
+                                                         alert(game.playerone.role+" loses the game!")
+                                                     }
+                                                     else{
+                                                         alert("Tie!")
+                                                     }
+                                                 }
+                                                 else{
+                                                     setTimeout(inviteeControl,1000);
+                                                 }
+
+                                             }
+                                             else{
+                                                 xhr.open("post","../pages/changeGameBoard.php",true);
+                                                 xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                                                 var poststr="gameBoard="+game.gameBoard.toString();
+                                                 xhr.send(poststr);
+                                             }
+                                         }
+                                     };
+                                     xhr.open("post","../pages/changeGameBoard.php",true);
+                                     xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                                     var poststr="gameBoard="+game.gameBoard.toString();
+                                     xhr.send(poststr);
+
+                                 });
+
+
+                             };
+                            canvas.addEventListener('click',playertwoDraw,false)
+
+                        }
+                        else if(game.gameState()==WIN){
+                            alert(game.playerone.role+" wins the game!")
+                        }
+                        else if(game.gameState()==LOSE){
+                            alert(game.playerone.role+" loses the game!")
+                        }
+                        else{
+                            alert("Tie!")
+                        }
+                    });
+
+
+                }
+                else{
+                  setTimeout(inviteeControl,1000);
+                }
+
+            }
+            else{
+                xhr.open("post","../pages/gameMessage.php",true);
+                xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                xhr.send(null);
+            }
+        }
+    };
+    xhr.open("post","../pages/gameMessage.php",true);
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xhr.send(null);
+}
+
 var withPlayerButton=document.getElementById("withPlayer");
 var withPlayer=function(){
+
     var rowHandler=function(event){
         var username=event.target.innerHTML;
         var xhr=new XMLHttpRequest();
@@ -654,8 +1051,18 @@ var withPlayer=function(){
             if(xhr.readyState==4){
                 if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
                     if(xhr.responseText=="1"){
+                      game.playerone.role="inviter";
+                      game.playertwo.role="invitee";
+
+                        drawGameControlBoard();
                         var canvas=document.getElementById("myCanvas");
                         drawGameBoard(canvas);
+
+
+                        var playButton=document.getElementById("playButton");
+                        playButton.addEventListener('click',inviterControl,false);
+
+
                     }
                     else{
                         alert("request failed");
@@ -700,43 +1107,6 @@ var withPlayer=function(){
     onlineuserListener();
 
 
-
-    var plyerControl=function(){
-        var canvas=document.getElementById("myCanvas");
-        drawGameBoard(canvas);
-
-        var xhr=new XMLHttpRequest();
-        xhr.onreadystatechange=function(){
-            if(xhr.readyState==4){
-                if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
-                   var newgameborad=xhr.responseText.split(',');
-                   var num=-1;
-                   for(var i=0;i<game.gameBoard.length;i++){
-                      if(newgameborad[i]!=game.gameBoard[i]){
-                         num=i;
-                         break;
-                      }
-                   }
-                   if(num!=-1){
-
-                   }
-                   else{
-
-                   }
-
-                }
-                else{
-
-                }
-            }
-        };
-        xhr.open("post","../pages/gameMessage.php",true);
-        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-        xhr.send(null);
-    };
-
-
-
     var requestListener=function(){
         var xhr=new XMLHttpRequest();
         xhr.onreadystatechange=function(){
@@ -750,8 +1120,18 @@ var withPlayer=function(){
                             xhr1.onreadystatechange=function(){
                                 if(xhr1.readyState==4){
                                     if((xhr1.status>=200&&xhr1.status<300)||xhr1.status==304){
-                                        if(xhr1.responseText="1"){
+                                        if(xhr1.responseText=="1"){
 
+                                            game.playerone.role="inviter";
+                                            game.playertwo.role="invitee";
+
+                                            drawGameControlBoard();
+                                            var canvas=document.getElementById("myCanvas");
+                                            drawGameBoard(canvas);
+
+
+                                            var playButton=document.getElementById("playButton");
+                                            playButton.addEventListener('click',inviteeControl,false);
 
                                         }
 

@@ -1,19 +1,9 @@
 <?php
     session_start();
-    $_SESSION['username']="aaa";
     $username=$_SESSION['username'];
-    $dbusername="ayl";
-    $password="tttAYL";
-    $hostname="localhost";
-    $database="tactictoe";
-    $mysqli=new mysqli($hostname,$dbusername,$password,$database);
-    if(mysqli_connect_errno()){
-        echo "Connect failed!";
-        exit();
-    }
 ?>
 
-<!DOCTYPE HTML>
+
 <html>
 <head>
 <meta charset="utf-8">

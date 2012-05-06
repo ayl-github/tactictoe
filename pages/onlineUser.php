@@ -7,10 +7,10 @@
  * To change this template use File | Settings | File Templates.
  */
     $dbusername="ayl";
-    $password="tttAYL";
+    $dbpassword="tttAYL";
     $hostname="localhost";
     $database="tactictoe";
-    $mysqli=new mysqli($hostname,$dbusername,$password,$database);
+    $mysqli=new mysqli($hostname,$dbusername,$dbpassword,$database);
     if(mysqli_connect_errno()){
         echo "Connect failed!";
         exit();
