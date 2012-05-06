@@ -6,6 +6,7 @@
  * Time: 上午11:55
  * To change this template use File | Settings | File Templates.
  */
+session_start();
 $dbusername="ayl";
 $dbpassword="tttAYL";
 $hostname="localhost";
@@ -21,11 +22,11 @@ if (!$result) {
     echo  "<script>window.location.href='../login.html'</script>";
 }
 if ($result->num_rows>0) {
-    session_start();
     $_SESSION['username']=$username;
-    echo  "<script>window.location.href='mainPage.php'</script>";
+    echo  "<script>window.location.href='mainPage.html'</script>";
 }
 else {
     echo  "<script>window.location.href='../login.html'</script>";
 }
+$mysqli->close();
 ?>

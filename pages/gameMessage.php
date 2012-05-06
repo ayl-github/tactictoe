@@ -23,4 +23,5 @@ if($result=$mysqli->query($query)){
     $gameboard=$result->fetch_assoc();
     echo $gameboard['gameboard'];
 }
+$mysqli->close();
 ?>

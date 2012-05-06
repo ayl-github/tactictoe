@@ -52,7 +52,7 @@ function drawDynamicLine(ctx,sx,sy,dx,dy,timeInterval,handler){
    var myLine={
        ctx:ctx,
        currentx:sx,
-       cureenty:sy,
+       currenty:sy,
        sourcex:sx,
        sourcey:sy,
        stepx:stepx,
@@ -66,12 +66,12 @@ function drawDynamicLine(ctx,sx,sy,dx,dy,timeInterval,handler){
 function drawLineByFrame(myLine){
     //myLine.ctx.clearRect(0,0,myLine.ctx.width,myLine.ctx.height);
     myLine.currentx+=myLine.stepx;
-    myLine.cureenty+=myLine.stepy;
+    myLine.currenty+=myLine.stepy;
     myLine.steps--;
 
     myLine.ctx.beginPath();
     myLine.ctx.moveTo(myLine.sourcex,myLine.sourcey);
-    myLine.ctx.lineTo(myLine.currentx,myLine.cureenty);
+    myLine.ctx.lineTo(myLine.currentx,myLine.currenty);
     myLine.ctx.stroke();
     if(myLine.steps==0){
         myLine.handler();
@@ -129,7 +129,7 @@ function drawO(ctx,centerx,centery,handler){
     drawDynamicCircle(ctx,centerx,centery,30,30,handler);
 
 }
-function drawGameBoard(canvas){
+function drawGameBoard(canvas,handler){
     canvas.width=300;
     canvas.height=300;
     if(!canvas.getContext){
@@ -143,16 +143,18 @@ function drawGameBoard(canvas){
     drawDynamicLine(ctx,canvas.width/3,0,canvas.width/3,canvas.height,1,function(){});
     drawDynamicLine(ctx,2*canvas.width/3,0,2*canvas.width/3,canvas.height,1,function(){
        displayGameControlBoard();
+       handler();
     });
 
 }
-function drawGameControlBoard(){
-    var gameControlBoard=document.getElementById("gameControlBoard");
+function hideGameControlBoard(){
+    /*var gameControlBoard=document.getElementById("gameControlBoard");
     var playButton=document.createElement("button");
     playButton.setAttribute("id","playButton");
     var playButtonText=document.createTextNode(" Play ");
     playButton.appendChild(playButtonText);
-    gameControlBoard.appendChild(playButton);
+    gameControlBoard.appendChild(playButton);*/
+    var playButton=document.getElementById("playButton");
     playButton.style.display="none";
 
 }
@@ -408,6 +410,17 @@ var game={
             var thirdChess=this.gameBoard[WIN_STATUS[pos][2]];
             if(firstChess==secondChess&&firstChess==thirdChess&&firstChess!='E'){
                 result= (firstChess==this.playerone.sign ? WIN : LOSE);
+                /*var sourcex=position(WIN_STATUS[pos][ 0]).x;
+                var sourcey=position(WIN_STATUS[pos][0]).y;
+                var currentx=position(WIN_STATUS[pos][2]).x;
+                var currenty=position(WIN_STATUS[pos][2]).y;
+                var canvas=document.getElementById("myCanvas");
+                var ctx=canvas.getContext("2d");
+                ctx.strokeStyle("green");
+                ctx.beginPath();
+                ctx.moveTo(sourcex,sourcey);
+                ctx.lineTo(currentx,currenty);
+                ctx.stroke();*/
                 return result;
             }
         }
@@ -427,9 +440,25 @@ var game={
         sign:"O",
         role:""
     } ,
-    lastWinner:""
+    lastWinner:"",
+    currentUser:""
 };
+function position(number){
+    var row=0,column=0;
+    var centerx,centery;
+    column=number%3;
+    row=(number-column)/3;
 
+    var canvas=document.getElementById("myCanvas");
+    var x=canvas.width/3*column;
+    var y=canvas.height/3*row;
+
+    return {
+        x:x,
+        y:y
+    }
+
+}
 //play with computer
 function computerControl(){
     var canvas=document.getElementById("myCanvas");
@@ -632,7 +661,7 @@ var withComputer=function(){
     game.playerone.role="computer" ;
     game.playertwo.role="player";
 
-    drawGameControlBoard();
+    hideGameControlBoard();
     var canvas=document.getElementById("myCanvas");
     drawGameBoard(canvas);
 
@@ -644,6 +673,7 @@ withComputerButton.addEventListener("click",withComputer,false);
 
 
 //play with player
+
 function changeGameBoard(newGameBoard){
     var changedPos=-1;
     for(var i=0;i<game.gameBoard.length;i++){
@@ -655,10 +685,14 @@ function changeGameBoard(newGameBoard){
     return changedPos;
 }
 function inviterControl(){
+
     var playButton=document.getElementById("playButton");
-    playButton.removeEventListener('click',inviteeControl,false);
+    playButton.removeEventListener('click',inviterControl,false);
 
     var secondHandler=function(){
+        //alert("hi");
+        var canvas=document.getElementById("myCanvas");
+        canvas.removeEventListener('click',secondHandler,false);
         var xhr=new XMLHttpRequest();
         xhr.onreadystatechange=function(){
             if(xhr.readyState==4){
@@ -741,13 +775,19 @@ function inviterControl(){
                                                             setTimeout(secondHandler,1000);
                                                         }
                                                         else if(game.gameState()==WIN){
-                                                            alert(game.playerone.role+" wins the game!")
+                                                            alert(game.playerone.role+" wins the game!");
+                                                            game.lastWinner=game.playerone.role;
+                                                            newGame();
                                                         }
                                                         else if(game.gameState()==LOSE){
-                                                            alert(game.playerone.role+" loses the game!")
+                                                            alert(game.playerone.role+" loses the game!");
+                                                            game.lastWinner=game.playertwo.role;
+                                                            newGame();
                                                         }
                                                         else{
                                                             alert("Tie!")
+                                                            game.lastWinner=game.playertwo.role;
+                                                            newGame();
                                                         }
 
                                                     }
@@ -779,13 +819,19 @@ function inviterControl(){
 
                             }
                             else if(game.gameState()==WIN){
-                                alert(game.playerone.role+" wins the game!")
+                                alert(game.playerone.role+" wins the game!");
+                                game.lastWinner=game.playerone.role;
+                                newGame();
                             }
                             else if(game.gameState()==LOSE){
-                                alert(game.playerone.role+" loses the game!")
+                                alert(game.playerone.role+" loses the game!");
+                                game.lastWinner=game.playertwo.role;
+                                newGame();
                             }
                             else{
                                 alert("Tie!")
+                                game.lastWinner=game.playertwo.role;
+                                newGame();
                             }
 
 
@@ -891,7 +937,7 @@ function inviterControl(){
     canvas.addEventListener('click',firstHandler,false);
 }
 function inviteeControl(){
-
+    //alert("hi");
     var playButton=document.getElementById("playButton");
     playButton.removeEventListener('click',inviteeControl,false);
 
@@ -977,13 +1023,19 @@ function inviteeControl(){
                                                          setTimeout(inviteeControl,1000);
                                                      }
                                                      else if(game.gameState()==WIN){
-                                                         alert(game.playerone.role+" wins the game!")
+                                                         alert(game.playerone.role+" wins the game!");
+                                                         game.lastWinner=game.playerone.role;
+                                                         newGame();
                                                      }
                                                      else if(game.gameState()==LOSE){
-                                                         alert(game.playerone.role+" loses the game!")
+                                                         alert(game.playerone.role+" loses the game!");
+                                                         game.lastWinner=game.playertwo.role;
+                                                         newGame();
                                                      }
                                                      else{
+                                                         game.lastWinner=game.playertwo.role;
                                                          alert("Tie!")
+                                                         newGame();
                                                      }
                                                  }
                                                  else{
@@ -1012,13 +1064,19 @@ function inviteeControl(){
 
                         }
                         else if(game.gameState()==WIN){
-                            alert(game.playerone.role+" wins the game!")
+                            alert(game.playerone.role+" wins the game!");
+                            game.lastWinner=game.playerone.role;
+                            newGame();
                         }
                         else if(game.gameState()==LOSE){
-                            alert(game.playerone.role+" loses the game!")
+                            alert(game.playerone.role+" loses the game!");
+                            game.lastWinner=game.playertwo.role;
+                            newGame();
                         }
                         else{
-                            alert("Tie!")
+                            game.lastWinner=game.playertwo.role;
+                            alert("Tie!");
+                            newGame();
                         }
                     });
 
@@ -1040,6 +1098,80 @@ function inviteeControl(){
     xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xhr.send(null);
 }
+function newGame(){
+
+    game.gameBoard=new Array("E","E","E","E","E","E","E","E","E");
+    hideGameControlBoard();
+    var canvas=document.getElementById("myCanvas");
+    var ctx=canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawGameBoard(canvas,function(){
+
+        var xhr=new XMLHttpRequest();
+        xhr.onreadystatechange=function(){
+            if(xhr.readyState==4){
+                if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
+                    if(xhr.responseText=="1"){
+                        if(game.lastWinner=="inviter"){
+                            if(game.currentUser==game.lastWinner){
+                                game.currentUser=="invitee"
+                                game.playerone.role="invitee";
+                                game.playertwo.role="inviter";
+                                var playButton=document.getElementById("playButton");
+                                playButton.addEventListener('click',inviteeControl,false);
+
+                            }
+                            else{
+                                game.currentUser=="inviter"
+                                game.playerone.role="inviter";
+                                game.playertwo.role="invitee";
+                                var playButton=document.getElementById("playButton");
+                                playButton.addEventListener('click',inviterControl,false);
+
+                            }
+                        }
+                        else{
+                              if(game.currentUser==game.lastWinner){
+                                game.currentUser=="inviter"
+                                game.playerone.role="inviter";
+                                game.playertwo.role="invitee";
+                                var playButton=document.getElementById("playButton");
+                                playButton.addEventListener('click',inviterControl,false);
+
+                              }
+                              else{
+                                game.currentUser=="invitee"
+                                game.playerone.role="invitee";
+                                game.playertwo.role="inviter";
+                                var playButton=document.getElementById("playButton");
+                                playButton.addEventListener('click',inviteeControl,false);
+
+                              }
+
+
+                        }
+
+                    }
+                    else{
+
+                    }
+
+                }
+                else{
+                    xhr.open("post","../pages/gameOverSet.php",true);
+                    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                    xhr.send(null);
+                }
+            }
+        };
+        xhr.open("post","../pages/gameOverSet.php",true);
+        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xhr.send(null);
+    });
+
+
+
+}
 
 var withPlayerButton=document.getElementById("withPlayer");
 var withPlayer=function(){
@@ -1053,10 +1185,10 @@ var withPlayer=function(){
                     if(xhr.responseText=="1"){
                       game.playerone.role="inviter";
                       game.playertwo.role="invitee";
-
-                        drawGameControlBoard();
+                      game.currentUser="inviter";
+                        hideGameControlBoard();
                         var canvas=document.getElementById("myCanvas");
-                        drawGameBoard(canvas);
+                        drawGameBoard(canvas,function(){});
 
 
                         var playButton=document.getElementById("playButton");
@@ -1065,12 +1197,16 @@ var withPlayer=function(){
 
                     }
                     else{
-                        alert("request failed");
+                        alert("request falied! Try again,please!");
+                        var tb=document.getElementById('onlineUser');
+                        for(var row=1;row<tb.rows.length;row++){
+                            tb.rows[row].cells[0].addEventListener("dblclick",rowHandler,false);
+                        }
                     }
 
                 }
                 else{
-                    alert("request failed");
+
                 }
             }
         };
@@ -1124,20 +1260,28 @@ var withPlayer=function(){
 
                                             game.playerone.role="inviter";
                                             game.playertwo.role="invitee";
+                                            game.currentUser="invitee";
 
-                                            drawGameControlBoard();
+                                            hideGameControlBoard();
                                             var canvas=document.getElementById("myCanvas");
-                                            drawGameBoard(canvas);
+                                            drawGameBoard(canvas,function(){});
 
 
                                             var playButton=document.getElementById("playButton");
                                             playButton.addEventListener('click',inviteeControl,false);
 
                                         }
+                                        else{
+                                           alert("The inviter is not here!");
+                                           setTimeout(requestListener,1000);
+                                        }
 
                                     }
                                     else{
-
+                                        xhr1.open("post","../pages/accept.php",true);
+                                        xhr1.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                                        var poststr="playerone="+result[1];
+                                        xhr1.send(poststr);
                                     }
                                 }
                             };
@@ -1156,7 +1300,9 @@ var withPlayer=function(){
                     }
                 }
                 else{
-
+                    xhr.open("post","../pages/requestListener.php",true);
+                    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                    xhr.send(null);
                 }
             }
         };

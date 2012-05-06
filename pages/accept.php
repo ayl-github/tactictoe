@@ -18,14 +18,21 @@ if(mysqli_connect_errno()){
 session_start();
 $playerone=$_POST['playerone'];
 $playertwo=$_SESSION['username'];
-
-$query="update game set isready='1' where playerone='".$playerone."'"."and playertwo='".$playertwo."'";
+$query="select * from game where playerone='".$playerone."'"."and playertwo='".$playertwo."'";
 $result=$mysqli->query($query);
-if($result){
-    echo "1";
+if($result->num_rows>0){
+    $query="update game set isready='1' where playerone='".$playerone."'"."and playertwo='".$playertwo."'";
+    $result=$mysqli->query($query);
+    if($result){
+        echo "1";
+    }
+    else{
+        echo "0";
+    }
 }
 else{
-    echo "0";
+  echo "0";
 }
 
+$mysqli->close();
 ?>

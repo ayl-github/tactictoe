@@ -32,5 +32,5 @@
     else{
         echo "0,0";
     }
-
+$mysqli->close();
 ?>
