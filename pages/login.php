@@ -23,7 +23,7 @@ if (!$result) {
 }
 if ($result->num_rows>0) {
     $_SESSION['username']=$username;
-    echo  "<script>window.location.href='mainPage.html'</script>";
+    echo  "<script>window.location.href='mainPage.php'</script>";
 }
 else {
     echo  "<script>window.location.href='../login.html'</script>";

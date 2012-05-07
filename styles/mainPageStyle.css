@@ -80,4 +80,13 @@ table,td{
     border: 1px solid black;
 }
 
+#playButton{
+    display: none;
+}
+#newButton{
+    display: none;
+}
+#quitButton{
+    display: none;
+}
 

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,7 +22,11 @@
       </section>
       
       <section id="gameControlBoard">
+
           <button id="playButton">Play</button>
+          <button id="newButton">New</button>
+          <button id="quitButton">Quit</button>
+
       </section>   
     </section>
     
@@ -31,6 +37,13 @@
   
   
   <section id="right">
+    <section id="currentUser">
+        <?php
+        session_start();
+        $username=$_SESSION["username"];
+        echo "<p id='username'>".$username."</p>"
+        ?>
+    </section>
     <section id="close">
     </section>
     <section id="computer">
