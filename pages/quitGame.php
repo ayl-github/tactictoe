@@ -2,8 +2,8 @@
 /**
  * Created by JetBrains PhpStorm.
  * User: Administrator
- * Date: 12-5-4
- * Time: 上午11:46
+ * Date: 12-5-11
+ * Time: 下午9:33
  * To change this template use File | Settings | File Templates.
  */
 $dbusername="ayl";
@@ -17,22 +17,21 @@ if(mysqli_connect_errno()){
 }
 session_start();
 $username=$_SESSION['username'];
-
-$query="select gameboard from game where playerone='".$username."' or playertwo='".$username."'";
-if($result=$mysqli->query($query)){
-    if($result->num_rows>0){
-        $gameboard=$result->fetch_assoc();
-        echo $gameboard['gameboard'];
+$query="delete from game  where playerone= '".$username."' or playertwo='".$username."'";
+$result=$mysqli->query($query);
+if(!$result){
+    echo "0";
+}
+else{
+    $query="update online set status='0' where username='".$username."'";
+    $result=$mysqli->query($query);
+    if($result){
+        echo "1";
     }
     else{
         echo "0";
     }
-
 }
-else{
-    echo "0";
-}
-
 
 $mysqli->close();
 ?>
