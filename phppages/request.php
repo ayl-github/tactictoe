@@ -63,7 +63,7 @@
                 $stmt->bind_param("ssss",$playerone,$playertwo,$isready,$gameboard);
                 $stmt->execute();
 
-                sleep(2);
+                sleep(4);
 
                 $query="select isready from game where playerone='".$playerone."'and playertwo='".$playertwo."'";
                 $result=$mysqli->query($query);

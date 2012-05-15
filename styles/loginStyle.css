@@ -181,13 +181,16 @@ fieldset
 #actions
 {
     margin: 25px 0 0 0;
+
 }
 .actionsitem{
 	display:inline-block;
-	width:130px;
-	margin-left:45px;
-	text-align:center;
-	}
+	width:140px;
+	margin-left:40px;
+    text-align:center;
+    float: left;
+}
+
 	
 .submit
 {		
@@ -204,14 +207,14 @@ fieldset
     border-radius: 3px;
     
     text-shadow: 0 1px 0 rgba(204,204,204,0.5);
-    box-shadow: 0 0 1px rgba(51,0,51,0.6)  inset;  
-    
+    box-shadow: 0 0 1px rgba(51,0,51,0.6)  inset;
+
     border-width: 1px;
     border-style: solid;
     border-color:  #330053;
-    
 
-   
+
+
     height: 35px;
     padding: 0;
     width: 100px;

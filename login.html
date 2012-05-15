@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="styles/loginStyle.css" type="text/css">
 </head>
 <body>
-<form id="login" action="pages/login.php" method="post" >
+<form id="login" action="phppages/login.php" method="post" >
     <h1>Log In</h1>
     <fieldset id="inputs">
         <input id="username" name="username" type="text" placeholder="Username" autofocus required>
@@ -14,12 +14,12 @@
     
     <fieldset id="actions">
         <div class="actionsitem">
-        <input type="submit" class="submit" value="Log in" >
+        <input type="submit" id="submititem" class="submit" value="Log in" >
         <a href="">Register now!</a>
         </div>
         
         <div class="actionsitem">
-        <input type="reset" class="submit" value="Reset">  
+        <input type="reset" id="resetitem" class="submit" value="Reset">
         <a href="">Forgot your password?</a>
         </div> 
     </fieldset>

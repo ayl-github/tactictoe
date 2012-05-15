@@ -15,7 +15,7 @@
   
     <section id="room">
       <section id="gameTitle">
-          <p>Tac-Tic-Toe</p>
+          <p>Tic-Tac-Toe</p>
       </section>
       <section id="gameBoard">
         <canvas id="myCanvas" ></canvas>
@@ -37,6 +37,7 @@
   
   
   <section id="right">
+
     <section id="currentUser">
         <?php
         session_start();
@@ -44,17 +45,21 @@
         echo "<p id='username'>".$username."</p>"
         ?>
     </section>
+
     <section id="close">
     </section>
-    <section id="computer">
-     <button id="withComputer">withComputer</button>
-    </section>
-    <section id="player">
-        <button id="withPlayer">withPlayer</button>
-    </section>
-    <section id="userList">
 
+    <section id="computer">
+     <button id="withComputer">WithComputer</button>
     </section>
+
+    <section id="player">
+        <button id="withPlayer">WithPlayer</button>
+    </section>
+
+    <section id="userList">
+    </section>
+
   </section>
   
   
