@@ -400,11 +400,13 @@ var game={
             var thirdChess=this.gameBoard[WIN_STATUS[pos][2]];
             if(firstChess==secondChess&&firstChess==thirdChess&&firstChess!='E'){
                 result= (firstChess==this.playerone.sign ? WIN : LOSE);
+                game.isgameover=true;
                 return result;
             }
         }
 
         if(isFull){
+            game.isgameover=true;
             return DRAW;
         }
         return GOON;
@@ -422,7 +424,8 @@ var game={
     lastWinner:"",
     currentUser:"",
     userone:"",
-    usertwo:""
+    usertwo:"",
+    isgameover:false
 };
 
 //play with computer
@@ -432,7 +435,7 @@ var withComputerButton=document.getElementById("withComputer");
 var withComputer=function(){
 
     var withoutComputer=function(){
-        if(game.gameState()!=GOON){
+        if(game.isgameover){
             document.getElementById('withComputer').innerHTML="WithComputer";
             game.gameBoard=new Array("E","E","E","E","E","E","E","E","E");
             var canvas=document.getElementById("myCanvas");
@@ -466,6 +469,7 @@ var withComputer=function(){
                 game.gameControls.quitButton.style.display="inline-block";
                 game.gameControls.newButton.addEventListener('click',computerControl,false);
                 game.gameControls.quitButton.addEventListener('click',quitComputerGame,false);
+                game.isgameover=true;
 
             });
         }
@@ -759,7 +763,7 @@ withComputerButton.addEventListener("click",withComputer,false);
 
 var withPlayerButton=document.getElementById("withPlayer");
 var withPlayer=function(){
-
+    game.isgameover=true;
     function changeGameBoard(newGameBoard){
         var changedPos=-1;
         for(var i=0;i<game.gameBoard.length;i++){
@@ -772,12 +776,16 @@ var withPlayer=function(){
     }
 
     var withoutPlayer=function(){
-        if(game.gameState()!=GOON){
+        if(game.isgameover){
             quitPlayerGame();
+            clearTimeout(onlineuserID);
             document.getElementById("userList").innerHTML="";
+            document.getElementById('withPlayer').innerHTML="WithComputer";
+
+            withPlayerButton.removeEventListener('click',withoutPlayer,false);
             withComputerButton.addEventListener('click',withComputer,false);
             withPlayerButton.addEventListener('click',withPlayer,false);
-            withPlayerButton.removeEventListener('click',withoutPlayer,false);
+
         }
         else{
             alert("The game is not over, please go on!");
@@ -795,6 +803,7 @@ var withPlayer=function(){
                     game.gameControls.playButton.style.display="none";
                     game.gameControls.newButton.style.display="none";
                     game.gameControls.quitButton.style.display="none";
+                    game.isgameover=true;
                     requestListener();
 
 
@@ -812,6 +821,7 @@ var withPlayer=function(){
         var username=document.getElementById('username');
         xhr.send(username.toString());
     }
+
     var quitPlayerGame1=function (){
         if(confirm("Are you sure quit the game now?")){
             var xhr=new XMLHttpRequest();
@@ -824,6 +834,7 @@ var withPlayer=function(){
                         game.gameControls.playButton.style.display="none";
                         game.gameControls.newButton.style.display="none";
                         game.gameControls.quitButton.style.display="none";
+                        game.isgameover=true;
                         requestListener();
 
 
@@ -924,11 +935,13 @@ var withPlayer=function(){
 
     }
 
+    document.getElementById('withPlayer').innerHTML="WithoutComputer";
     withComputerButton.removeEventListener('click',withComputer,false);
     withPlayerButton.removeEventListener('click',withPlayer,false);
     withPlayerButton.addEventListener('click',withoutPlayer,false);
 
     var inviterControl=function(){
+        game.isgameover=false;
         game.gameControls.playButton.style.display="none";
         game.gameControls.newButton.style.display="none";
         game.gameControls.quitButton.style.display="inline-block";
@@ -950,7 +963,6 @@ var withPlayer=function(){
                                 alert(game.userone+" has quit the game!");
                             }
                             quitPlayerGame();
-
                         }
                         else{
                             var newgameborad=xhr.responseText.split(',');
@@ -1201,6 +1213,7 @@ var withPlayer=function(){
     }
 
     var inviteeControl= function(){
+        game.isgameover=false;
         game.gameControls.playButton.style.display="none";
         game.gameControls.newButton.style.display="none";
         game.gameControls.quitButton.style.display="inline-block";
@@ -1425,12 +1438,13 @@ var withPlayer=function(){
 
     };
 
+    var onlineuserID;
     var onlineuserListener=function(){
         var xhr=new XMLHttpRequest();
         xhr.onreadystatechange=function(){
             if(xhr.readyState==4){
                 if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
-                    setTimeout(onlineuserListener,4000);
+                  onlineuserID=setTimeout(onlineuserListener,4000);
 
                     document.getElementById("userList").innerHTML=xhr.responseText;
                     var tb=document.getElementById('onlineUser');
@@ -1469,6 +1483,7 @@ var withPlayer=function(){
                                 if(xhr1.readyState==4){
                                     if((xhr1.status>=200&&xhr1.status<300)||xhr1.status==304){
                                         if(xhr1.responseText=="1"){
+                                            clearInterval(requestListenerID) ;
                                             game.userone=inviterName;
                                             game.usertwo=inviteeName;
                                             game.playerone.role=inviterName;
@@ -1483,7 +1498,7 @@ var withPlayer=function(){
                                         }
                                         else{
                                            alert("The inviter is not here!");
-                                           setTimeout(requestListener,1000);
+                                           //setTimeout(requestListener,2000);
                                         }
 
                                     }
@@ -1502,11 +1517,11 @@ var withPlayer=function(){
 
                         }
                         else{
-                            setTimeout(requestListener,1000);
+                            //setTimeout(requestListener,2000);
                         }
                     }
                     else{
-                        setTimeout(requestListener,1000);
+                        //setTimeout(requestListener,2000);
                     }
                 }
                 else{
@@ -1521,7 +1536,7 @@ var withPlayer=function(){
         xhr.send(null);
 
     };
-    requestListener();
+    var requestListenerID=setInterval(requestListener,1000);
 };
 withPlayerButton.addEventListener("click",withPlayer,false);
 
