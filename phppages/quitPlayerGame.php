@@ -25,8 +25,18 @@ if(!$result){
 else{
     $query="update online set status='0' where username='".$username."'";
     $result=$mysqli->query($query);
+
     if($result){
-        echo "1";
+        $username=$_POST['otherUserName'];
+        $query="update online set status='0' where username='".$username."'";
+        $result=$mysqli->query($query);
+        if($result){
+            echo "1";
+        }
+        else{
+            echo "0";
+        }
+
     }
     else{
         echo "0";
