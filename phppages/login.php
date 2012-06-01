@@ -23,6 +23,8 @@ if (!$result) {
 }
 if ($result->num_rows>0) {
     $_SESSION['username']=$username;
+    $query="insert into online(username,status) values('".$username."','0')";
+    $result=$mysqli->query($query);
     echo  "<script>window.location.href='mainPage.php'</script>";
 }
 else {

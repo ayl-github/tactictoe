@@ -1448,6 +1448,69 @@ var onlineusrListenerID;
 withPlayerButton.addEventListener("click",withPlayer,false);
 
 
+//close the website
+var closeButton=document.getElementById("closeButton");
+var closeHandler=function(){
+    var xhr=new XMLHttpRequest();
+    xhr.onreadystatechange=function(){
+        if(xhr.readyState==4){
+            if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
+
+                if(xhr.responseText=="1"){
+                    if (confirm("Are you sure exit the game?")){
+                        window.opener=null;
+                        window.open('','_self');
+                        window.close();
+                    }
+                    else{
+
+                    }
+                }
+                else{
+                   alert("Please try again!");
+                }
+            }
+            else{
+                xhr.open("post","../phppages/quit.php",true);
+                xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                xhr.send(null);
+            }
+        }
+    };
+    xhr.open("post","../phppages/quit.php",true);
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xhr.send(null);
+
+}
+closeButton.addEventListener("click",closeHandler,false);
+
+
+window.onunload=function(){
+    var xhr=new XMLHttpRequest();
+    xhr.onreadystatechange=function(){
+        if(xhr.readyState==4){
+            if((xhr.status>=200&&xhr.status<300)||xhr.status==304){
+
+                if(xhr.responseText=="1"){
+
+                }
+                else{
+                    alert("Please try again!");
+                }
+            }
+            else{
+                xhr.open("post","../phppages/quit.php",true);
+                xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                xhr.send(null);
+            }
+        }
+    };
+    xhr.open("post","../phppages/quit.php",true);
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xhr.send(null);
+}
+
+
 
 
 
